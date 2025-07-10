@@ -102,30 +102,6 @@ func getAmountInput(prompt string) float64 {
 	return amount
 }
 
-func getValues() (float64, string, string) {
-	var value float64
-	var inCurrency, outCurrency string
-
-	fmt.Println("Введите сумму, исходную валюту и валюту, в которую надо перевести")
-	fmt.Scan(&value, &inCurrency, &outCurrency)
-
-	// Валидация исходной валюты
-	validInCurrency, err := validateCurrency(inCurrency)
-	if err != nil {
-		fmt.Println("Ошибка исходной валюты:", err)
-		return 0, "", ""
-	}
-
-	// Валидация целевой валюты
-	validOutCurrency, err := validateCurrency(outCurrency)
-	if err != nil {
-		fmt.Println("Ошибка целевой валюты:", err)
-		return 0, "", ""
-	}
-
-	return value, validInCurrency, validOutCurrency
-}
-
 func validateCurrency(currency string) (string, error) {
 	upperCurrency := strings.ToUpper(currency)
 	
