@@ -5,9 +5,11 @@ import (
 	"strings"
 )
 
-const RUB float64 = 1.0
-const USD float64 = 80.7
-const EUR float64 = 89.67
+var currencies = map[string]float64{
+	"RUB": 1.0,
+	"USD": 80.7,
+	"EUR": 89.67,
+}
 
 func main() {
 	for {
@@ -125,25 +127,10 @@ func calculate (value float64, inCurrency string, outCurrency string) {
 	var result float64
 	
 	// Конвертируем в RUB (базовая валюта)
-	var rubValue float64
-	switch inCurrency {
-	case "RUB":
-		rubValue = value
-	case "USD":
-		rubValue = value * USD
-	case "EUR":
-		rubValue = value * EUR
-	}
+	rubValue := value * currencies[inCurrency]
 	
 	// Конвертируем из RUB в целевую валюту
-	switch outCurrency {
-	case "RUB":
-		result = rubValue
-	case "USD":
-		result = rubValue / USD
-	case "EUR":
-		result = rubValue / EUR
-	}
+	result = rubValue / currencies[outCurrency]
 	
 	fmt.Printf("%.2f %s = %.2f %s\n", value, inCurrency, result, outCurrency)
 }
