@@ -27,7 +27,7 @@ func main() {
 		outCurrency := getTargetCurrencyInput(prompt, inCurrency)
 		
 		// Конвертация
-		calculate(amount, inCurrency, outCurrency)
+		calculate(amount, inCurrency, outCurrency, &currencies)
 		
 		fmt.Println("\nНажмите Enter для новой конвертации или Ctrl+C для выхода...")
 		fmt.Scanln() // Ожидание Enter
@@ -118,7 +118,7 @@ func validateCurrency(currency string) (string, error) {
 	return "", fmt.Errorf("неподдерживаемая валюта: %s. Поддерживаемые валюты: USD, EUR, RUB", currency)
 }
 
-func calculate (value float64, inCurrency string, outCurrency string) {
+func calculate (value float64, inCurrency string, outCurrency string, currencies *map[string]float64) {
 	if inCurrency == outCurrency {
 		fmt.Println(value)
 		return
@@ -127,10 +127,10 @@ func calculate (value float64, inCurrency string, outCurrency string) {
 	var result float64
 	
 	// Конвертируем в RUB (базовая валюта)
-	rubValue := value * currencies[inCurrency]
+	rubValue := value * (*currencies)[inCurrency]
 	
 	// Конвертируем из RUB в целевую валюту
-	result = rubValue / currencies[outCurrency]
+	result = rubValue / (*currencies)[outCurrency]
 	
 	fmt.Printf("%.2f %s = %.2f %s\n", value, inCurrency, result, outCurrency)
 }
