@@ -22,7 +22,7 @@ func main() {
 		amount := getAmountInput("Введите сумму: ")
 		
 		// Ввод целевой валюты
-		availableCurrencies := getAvailableCurrencies(inCurrency)
+		availableCurrencies := getAvailableCurrencies(inCurrency, &currencies)
 		prompt := fmt.Sprintf("Введите целевую валюту (%s): ", availableCurrencies)
 		outCurrency := getTargetCurrencyInput(prompt, inCurrency)
 		
@@ -41,7 +41,7 @@ func getCurrencyInput(prompt string) string {
 		fmt.Scan(&currency)
 		
 		// Валидируем валюту
-		validCurrency, err := validateCurrency(currency)
+		validCurrency, err := validateCurrency(currency, &currencies)
 		if err != nil {
 			fmt.Println("Ошибка:", err)
 			continue
@@ -51,11 +51,10 @@ func getCurrencyInput(prompt string) string {
 	}
 }
 
-func getAvailableCurrencies(excludeCurrency string) string {
-	allCurrencies := []string{"USD", "EUR", "RUB"}
+func getAvailableCurrencies(excludeCurrency string, currencies *map[string]float64) string {
 	var available []string
 	
-	for _, currency := range allCurrencies {
+	for currency := range *currencies {
 		if currency != excludeCurrency {
 			available = append(available, currency)
 		}
@@ -71,7 +70,7 @@ func getTargetCurrencyInput(prompt string, sourceCurrency string) string {
 		fmt.Scan(&currency)
 		
 		// Валидируем валюту
-		validCurrency, err := validateCurrency(currency)
+		validCurrency, err := validateCurrency(currency, &currencies)
 		if err != nil {
 			fmt.Println("Ошибка:", err)
 			continue
@@ -104,18 +103,22 @@ func getAmountInput(prompt string) float64 {
 	return amount
 }
 
-func validateCurrency(currency string) (string, error) {
+func validateCurrency(currency string, currencies *map[string]float64) (string, error) {
 	upperCurrency := strings.ToUpper(currency)
 	
-	validCurrencies := []string{"USD", "EUR", "RUB"}
-	
-	for _, valid := range validCurrencies {
+	for valid := range *currencies {
 		if upperCurrency == valid {
 			return upperCurrency, nil
 		}
 	}
 	
-	return "", fmt.Errorf("неподдерживаемая валюта: %s. Поддерживаемые валюты: USD, EUR, RUB", currency)
+	// Собираем список поддерживаемых валют для сообщения об ошибке
+	var validCurrencies []string
+	for currency := range *currencies {
+		validCurrencies = append(validCurrencies, currency)
+	}
+	
+	return "", fmt.Errorf("неподдерживаемая валюта: %s. Поддерживаемые валюты: %s", currency, strings.Join(validCurrencies, ", "))
 }
 
 func calculate (value float64, inCurrency string, outCurrency string, currencies *map[string]float64) {
